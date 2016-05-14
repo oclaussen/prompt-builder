@@ -71,8 +71,8 @@ module PromptBuilder
       end
 
       def from_int(spec)
-        raise InvalidColor, color unless 0 <= spec && spec <= 255
-        Color.new spec, TERMCOLORS[term]
+        raise InvalidColor, spec unless 0 <= spec && spec <= 255
+        Color.new spec, TERMCOLORS[spec]
       end
 
       # rubocop:disable Metrics/MethodLength
