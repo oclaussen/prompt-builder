@@ -18,4 +18,5 @@
 
 module PromptBuilder
   require 'prompt_builder/prompt'
+  require 'prompt_builder/color'
 end
