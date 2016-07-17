@@ -51,7 +51,7 @@ module PromptBuilder
         elsif spec.is_a?(Integer)
           from_int spec
         else
-          raise InvalidColor, color
+          raise InvalidColor, spec
         end
       end
 
