@@ -54,6 +54,7 @@ module PromptBuilder
         "%{#{text}%}"
       end
 
+      # rubocop:disable Style/BlockDelimiters
       provide_escape_sequence :tty, '%l'
       provide_escape_sequence :tty_long, '%y'
       provide_escape_sequence :hostname_short, '%m'
@@ -62,23 +63,23 @@ module PromptBuilder
       provide_escape_sequence :user, '%n'
       provide_escape_sequence :pound, '%#'
       provide_escape_sequence :return_code, '%?'
-      provide_escape_sequence :parser_state, proc { |num = 0| "%#{num}_" }
-      provide_escape_sequence :parser_state_rev, proc { |num = 0| "%#{num}^" }
-      provide_escape_sequence :cwd, proc { |num = 0| "%#{num}~" }
-      provide_escape_sequence :cwd_full, proc { |num = 0| "%#{num}d" }
+      provide_escape_sequence :parser_state do |num = 0| "%#{num}_" end
+      provide_escape_sequence :parser_state_rev do |num = 0| "%#{num}^" end
+      provide_escape_sequence :cwd do |num = 0| "%#{num}~" end
+      provide_escape_sequence :cwd_full do |num = 0| "%#{num}d" end
       provide_escape_sequence :eval_depth, '%e'
       provide_escape_sequence :history, '%h'
       provide_escape_sequence :line, '%I'
       provide_escape_sequence :jobs, '%j'
       provide_escape_sequence :shlvl, '%L'
-      provide_escape_sequence :script_file, proc { |num = 0| "%#{num}x" }
+      provide_escape_sequence :script_file do |num = 0| "%#{num}x" end
       provide_escape_sequence :date, '%D'
       provide_escape_sequence :date_long, '%D'
       provide_escape_sequence :date_short, '%w'
       provide_escape_sequence :time, '%T'
       provide_escape_sequence :time_24h, '%T'
       provide_escape_sequence :time_12h, '%t'
-      provide_escape_sequence :date_format, proc { |format| "%D{#{format}}" }
+      provide_escape_sequence :date_format do |format| "%D{#{format}}" end
 
       provide_escape_sequence :if_success do |text, otherwise: ''|
         "%(?.#{text}.#{otherwise})"
