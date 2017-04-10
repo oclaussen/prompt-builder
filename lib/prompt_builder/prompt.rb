@@ -20,19 +20,6 @@ require 'prompt_builder/segment'
 
 module PromptBuilder
   class Prompt
-    def self.provide_escape_sequence(name, text = nil, &blk)
-      if text.nil? && block_given?
-        define_method name do |*args, **kwargs|
-          args << kwargs unless kwargs.empty?
-          Segment.new(instance_exec(*args, &blk))
-        end
-      else
-        define_method name do
-          Segment.new(text)
-        end
-      end
-    end
-
     def initialize(*args)
       @segments = []
       segment(args) unless args.empty?
@@ -50,8 +37,9 @@ module PromptBuilder
       raise 'No noprint escape sequence defined for prompt.'
     end
 
-    provide_escape_sequence(:literal) { |text| text }
-    provide_escape_sequence(:clear) { noprint '\033[0m' }
+    def clear
+      Segment.new(noprint '\033[0m')
+    end
 
     def colored(*args, **kwargs)
       Segment.new(*args, **kwargs, noprint: method(:noprint))

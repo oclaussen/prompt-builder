@@ -17,6 +17,7 @@
 #
 
 require 'prompt_builder/prompt'
+require 'prompt_builder/segment'
 
 ## Bash Prompt
 # * `date`: The date in "Weekday Month Date" format (e.g., "Tue May 26")
@@ -47,28 +48,37 @@ module PromptBuilder
         "\\[#{text}\\]"
       end
 
-      provide_escape_sequence :date, '\d'
-      provide_escape_sequence :hostname_short, '\h'
-      provide_escape_sequence :hostname_long, '\H'
-      provide_escape_sequence :hostname, '\H'
-      provide_escape_sequence :jobs, '\j'
-      provide_escape_sequence :tty, '\l'
-      provide_escape_sequence :shell, '\s'
-      provide_escape_sequence :time, '\t'
-      provide_escape_sequence :time_24h, '\t'
-      provide_escape_sequence :time_12h, '\T'
-      provide_escape_sequence :time_am_pm, '\@'
-      provide_escape_sequence :user, '\u'
-      provide_escape_sequence :version, '\v'
-      provide_escape_sequence :version_long, '\V'
-      provide_escape_sequence :cwd, '\w'
-      provide_escape_sequence :cwd_base, '\W'
-      provide_escape_sequence :history, '\!'
-      provide_escape_sequence :command, '\#'
-      provide_escape_sequence :pound, '\$'
+      def to_s
+        "export PS1=\"#{super}\""
+      end
 
-      # rubocop:disable Metrics/LineLength
-      provide_escape_sequence :if_success do |text, otherwise: ''|
+      {
+        date:           '\d',
+        hostname_short: '\h',
+        hostname_long:  '\H',
+        hostname:       '\H',
+        jobs:           '\j',
+        tty:            '\l',
+        shell:          '\s',
+        time:           '\t',
+        time_24h:       '\t',
+        time_12h:       '\T',
+        time_am_pm:     '\@',
+        user:           '\u',
+        version:        '\v',
+        version_long:   '\V',
+        cwd:            '\w',
+        cwd_base:       '\W',
+        history:        '\!',
+        command:        '\#',
+        pound:          '\$'
+      }.each do |name, sequence|
+        define_method name do
+          Segment.new sequence
+        end
+      end
+
+      def if_success(text, otherwise: '')
         "\\`if [ \\$? = 0 ]; then echo '#{text}'; else echo '#{otherwise}';fi\\`"
       end
     end
