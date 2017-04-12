@@ -56,7 +56,8 @@ module PromptBuilder
       end
 
       def to_s
-        "export PROMPT=$'#{super}'"
+        script "export PROMPT=$'#{super}'"
+        @lines.join "\n"
       end
 
       {
@@ -93,6 +94,36 @@ module PromptBuilder
 
       def if_success(text, otherwise: '')
         Segment.new "%(?.#{text}.#{otherwise})"
+      end
+
+      def vi_mode(cmd: 'CMD', ins: 'INS')
+        script 'setopt prompt_subst'
+        script 'function zle-line-init zle-keymap-select() { zle reset-prompt; zle -R }'
+        script 'zle -N zle-line-init'
+        script 'zle -N zle-keymap-select'
+        script <<~EOS
+          function vi_mode_prompt_info() {
+            INDICATOR_CMD="#{cmd}"
+            INDICATOR_INS="#{ins}"
+            echo "${${KEYMAP/vicmd/$INDICATOR_CMD}/(main|viins)/$INDICATOR_INS}"
+          }
+        EOS
+        Segment.new '$(vi_mode_prompt_info)'
+      end
+
+      def vcs_info
+        script 'setopt prompt_subst'
+        script 'autoload -Uz vcs_info'
+        script 'precmd () { vcs_info }'
+        script 'zstyle \':vcs_info:git:*\' formats \'%b\''
+        Segment.new '${vcs_info_msg_0_}'
+      end
+
+      private
+
+      def script(text)
+        @lines = [] if @lines.nil?
+        @lines << text unless @lines.include? text
       end
     end
   end
