@@ -19,22 +19,33 @@
 require 'prompt_builder/segment'
 
 module PromptBuilder
-  class Prompt
-    def initialize(*args)
-      @segments = []
-      segment(args) unless args.empty?
-    end
+  module Shell
+    module Common
+      def clear
+        Segment.new(noprint '\033[0m')
+      end
 
-    def segment(*args, **kwargs)
-      @segments << Segment.new(*args, **kwargs, noprint: method(:noprint))
-    end
+      def colored(*args, **kwargs)
+        Segment.new(*args, **kwargs, noprint: method(:noprint))
+      end
 
-    def to_s
-      @segments.map(&:to_s).join
-    end
+      FOREGROUNDS[:enable].each do |name, _|
+        define_method name do |*args|
+          colored(*args, foreground: name)
+        end
+      end
 
-    def noprint(_text)
-      raise 'No noprint escape sequence defined for prompt.'
+      BACKGROUNDS[:enable].each do |name, _|
+        define_method "#{name}_background".to_sym do |*args|
+          colored(*args, background: name)
+        end
+      end
+
+      ATTRIBUTES[:enable].each do |name, _|
+        define_method name do |*args|
+          colored(*args, attribute: name)
+        end
+      end
     end
   end
 end

@@ -18,6 +18,7 @@
 
 require 'prompt_builder/prompt'
 require 'prompt_builder/segment'
+require 'prompt_builder/shell/common'
 
 ## Bash Prompt
 # * `date`: The date in "Weekday Month Date" format (e.g., "Tue May 26")
@@ -44,6 +45,8 @@ require 'prompt_builder/segment'
 module PromptBuilder
   module Shell
     class BashPrompt < Prompt
+      include Shell::Common
+
       def noprint(text)
         "\\[#{text}\\]"
       end

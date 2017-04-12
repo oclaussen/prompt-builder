@@ -18,6 +18,7 @@
 
 require 'prompt_builder/prompt'
 require 'prompt_builder/segment'
+require 'prompt_builder/shell/common'
 
 ## Zsh Prompt
 # * `tty`: The basename of the shell's terminal device name
@@ -51,6 +52,8 @@ require 'prompt_builder/segment'
 module PromptBuilder
   module Shell
     class ZshPrompt < Prompt
+      include Shell::Common
+
       def noprint(text)
         "%{#{text}%}"
       end
