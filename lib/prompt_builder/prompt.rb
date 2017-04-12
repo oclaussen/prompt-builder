@@ -20,17 +20,31 @@ require 'prompt_builder/segment'
 
 module PromptBuilder
   class Prompt
-    def initialize(*args)
+    def initialize(*args, &blk)
       @segments = []
+      @decorators = { before: '', after: '', join: '', wrap: nil }
       segment(args) unless args.empty?
+      instance_eval(&blk) if block_given?
     end
 
     def segment(*args, **kwargs)
       @segments << Segment.new(*args, **kwargs, noprint: method(:noprint))
     end
 
+    def decorate_segments(before: nil, after: nil, join: nil, wrap: nil, &blk)
+      @decorators[:before] = before unless before.nil?
+      @decorators[:after] = after unless after.nil?
+      @decorators[:join] = join unless join.nil?
+      @decorators[:wrap] = wrap unless wrap.nil?
+      @decorators[:wrap] = blk if block_given?
+    end
+
     def to_s
-      @segments.map(&:to_s).join
+      seg = @segments
+      seg = seg.map(&:to_s)
+      seg = seg.map(&@decorators[:wrap]) unless @decorators[:wrap].nil?
+      seg = seg.join(@decorators[:join])
+      @decorators[:before] + seg + @decorators[:after]
     end
 
     def noprint(_text)
