@@ -59,9 +59,20 @@ module PromptBuilder
         "%{#{text}%}"
       end
 
-      def to_s
-        script "export PROMPT=$'#{super}'"
+      def compile(name)
+        script "export #{name}=$'#{super}'"
         @lines.join "\n"
+      end
+
+      def lookup_variable_name(name)
+        {
+          'PS1' => %i[default primary left],
+          'PS2' => %i[secondary],
+          'PS3' => %i[select],
+          'PS4' => %i[trace],
+          'RPS1' => %i[right],
+          'SPROMPT' => %i[spelling]
+        }.find(proc { super }) { |_, names| names.include? name }[0]
       end
 
       {

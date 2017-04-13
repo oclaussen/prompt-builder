@@ -22,10 +22,15 @@ require 'prompt_builder/segment'
 module PromptBuilder
   class Prompt
     def initialize(*args, &blk)
+      @prompts = {}
       @segments = []
       @decorators = { before: '', after: '', join: '', wrap: nil }
       segment(args) unless args.empty?
       instance_eval(&blk) if block_given?
+    end
+
+    def prompt(name = :default, *args, &blk)
+      @prompts[lookup_variable_name(name)] = self.class.new(*args, &blk)
     end
 
     def segment(*args, **kwargs)
@@ -40,7 +45,7 @@ module PromptBuilder
       @decorators[:wrap] = blk if block_given?
     end
 
-    def to_s
+    def compile(_variable_name)
       seg = @segments
       seg = seg.map(&:to_s)
       seg = seg.map(&@decorators[:wrap]) unless @decorators[:wrap].nil?
@@ -48,8 +53,20 @@ module PromptBuilder
       @decorators[:before] + seg + @decorators[:after]
     end
 
+    def to_s
+      default_variable = lookup_variable_name(:default)
+      @prompts[default_variable] = self unless @prompts.key?(default_variable)
+      @prompts.map { |name, p| p.compile(name) }.join "\n"
+    end
+
+    private
+
     def noprint(_text)
       raise 'No noprint escape sequence defined for prompt.'
+    end
+
+    def lookup_variable_name(name)
+      raise "No prompt variable found for #{name.inspect}."
     end
   end
 end
