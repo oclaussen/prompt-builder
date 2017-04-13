@@ -24,4 +24,4 @@ task install: [:build] do
   sh "gem install --install-dir files/default/vendor --no-document #{file}"
 end
 
-task default: [:clean, :rubocop, :spec, :build, :install]
+task default: %i[clean rubocop spec build install]

@@ -1,5 +1,6 @@
 # encoding: UTF-8
 # frozen_string_literal: true
+
 #
 # Copyright 2016, Ole Claussen <claussen.ole@gmail.com>
 #
@@ -38,7 +39,7 @@ module PromptBuilder
     disable: { bold: 22, underline: 24, blink: 25, reverse: 27, concealed: 28 }
   }.freeze
 
-  TERMCOLORS = %w(
+  TERMCOLORS = %w[
     000000 800000 008000 808000 000080 800080 008080 C0C0C0
     808080 FF0000 00FF00 FFFF00 0000FF FF00FF 00FFFF FFFFFF
     000000 00005F 000087 0000AF 0000D7 0000FF 005F00 005F5F
@@ -71,5 +72,5 @@ module PromptBuilder
     080808 121212 1C1C1C 262626 303030 3A3A3A 444444 4E4E4E
     585858 626262 6C6C6C 767676 808080 8A8A8A 949494 9E9E9E
     A8A8A8 B2B2B2 BCBCBC C6C6C6 D0D0D0 DADADA E4E4E4 EEEEEE
-  ).freeze
+  ].freeze
 end

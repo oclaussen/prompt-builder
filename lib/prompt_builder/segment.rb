@@ -1,5 +1,6 @@
 # encoding: UTF-8
 # frozen_string_literal: true
+
 #
 # Copyright 2016, Ole Claussen <claussen.ole@gmail.com>
 #
@@ -18,10 +19,6 @@
 
 require 'prompt_builder/constants'
 
-# TODO: make this nice
-# rubocop:disable Metrics/LineLength
-# rubocop:disable Metrics/AbcSize
-# rubocop:disable Metrics/CyclomaticComplexity
 module PromptBuilder
   class Segment
     def initialize(*args, noprint: nil, foreground: nil, background: nil, attribute: nil)

@@ -1,5 +1,6 @@
 # encoding: UTF-8
 # frozen_string_literal: true
+
 #
 # Copyright 2016, Ole Claussen <claussen.ole@gmail.com>
 #
@@ -22,7 +23,7 @@ module PromptBuilder
   module Shell
     module Common
       def clear
-        Segment.new(noprint '\033[0m')
+        Segment.new(noprint('\033[0m'))
       end
 
       def colored(*args, **kwargs)
