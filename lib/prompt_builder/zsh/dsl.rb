@@ -17,9 +17,7 @@
 # limitations under the License.
 #
 
-require 'prompt_builder/prompt'
-require 'prompt_builder/segment'
-require 'prompt_builder/shell/common'
+require 'prompt_builder/shell/segment'
 
 ## Zsh Prompt
 # * `tty`: The basename of the shell's terminal device name
@@ -51,30 +49,8 @@ require 'prompt_builder/shell/common'
 # * `date_format <format>`: Formatted time using <format> via `strftime`
 #
 module PromptBuilder
-  module Shell
-    class ZshPrompt < Prompt
-      include Shell::Common
-
-      def noprint(text)
-        "%{#{text}%}"
-      end
-
-      def compile(name)
-        script "export #{name}=$'#{super}'"
-        @lines.join "\n"
-      end
-
-      def lookup_variable_name(name)
-        {
-          'PS1' => %i[default primary left],
-          'PS2' => %i[secondary],
-          'PS3' => %i[select],
-          'PS4' => %i[trace],
-          'RPS1' => %i[right],
-          'SPROMPT' => %i[spelling]
-        }.find(proc { super }) { |_, names| names.include? name }[0]
-      end
-
+  module Zsh
+    module DSL
       {
         tty:              proc { '%l' },
         tty_long:         proc { '%y' },
@@ -103,12 +79,12 @@ module PromptBuilder
         date_format:      proc { |format| "%D{#{format}}" }
       }.each do |name, blk|
         define_method name do |*args|
-          Segment.new(instance_exec(*args, &blk))
+          Shell::Segment.new(instance_exec(*args, &blk))
         end
       end
 
       def if_success(text, otherwise: '')
-        Segment.new "%(?.#{text}.#{otherwise})"
+        Shell::Segment.new "%(?.#{text}.#{otherwise})"
       end
 
       def vi_mode(cmd: 'CMD', ins: 'INS')
@@ -123,7 +99,7 @@ module PromptBuilder
             echo "${${KEYMAP/vicmd/$INDICATOR_CMD}/(main|viins)/$INDICATOR_INS}"
           }
         EOS
-        Segment.new '$(vi_mode_prompt_info)'
+        Shell::Segment.new '$(vi_mode_prompt_info)'
       end
 
       def vcs_info
@@ -131,14 +107,7 @@ module PromptBuilder
         script 'autoload -Uz vcs_info'
         script 'precmd () { vcs_info }'
         script 'zstyle \':vcs_info:git:*\' formats \'%b\''
-        Segment.new '${vcs_info_msg_0_}'
-      end
-
-      private
-
-      def script(text)
-        @lines = [] if @lines.nil?
-        @lines << text unless @lines.include? text
+        Shell::Segment.new '${vcs_info_msg_0_}'
       end
     end
   end

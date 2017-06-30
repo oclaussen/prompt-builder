@@ -17,11 +17,12 @@
 # limitations under the License.
 #
 
-require 'prompt_builder/segment'
+require 'prompt_builder/shell/constants'
+require 'prompt_builder/shell/segment'
 
 module PromptBuilder
   module Shell
-    module Common
+    module CommonDSL
       def clear
         Segment.new(noprint('\033[0m'))
       end

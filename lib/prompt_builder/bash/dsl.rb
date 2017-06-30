@@ -17,9 +17,7 @@
 # limitations under the License.
 #
 
-require 'prompt_builder/prompt'
-require 'prompt_builder/segment'
-require 'prompt_builder/shell/common'
+require 'prompt_builder/shell/segment'
 
 ## Bash Prompt
 # * `date`: The date in "Weekday Month Date" format (e.g., "Tue May 26")
@@ -44,27 +42,8 @@ require 'prompt_builder/shell/common'
 # * `pound`: If the effective UID is 0, a #, otherwise a $
 #
 module PromptBuilder
-  module Shell
-    class BashPrompt < Prompt
-      include Shell::Common
-
-      def noprint(text)
-        "\\[#{text}\\]"
-      end
-
-      def compile(variable_name)
-        "export #{variable_name}=\"#{super}\""
-      end
-
-      def lookup_variable_name(name)
-        {
-          'PS1' => %i[default primary left],
-          'PS2' => %i[secondary],
-          'PS3' => %i[select],
-          'PS4' => %i[trace]
-        }.find(proc { super }) { |_, names| names.include? name }[0]
-      end
-
+  module Bash
+    module DSL
       {
         date:           '\d',
         hostname_short: '\h',
@@ -87,12 +66,12 @@ module PromptBuilder
         pound:          '\$'
       }.each do |name, sequence|
         define_method name do
-          Segment.new sequence
+          Shell::Segment.new sequence
         end
       end
 
       def if_success(text, otherwise: '')
-        "\\`if [ \\$? = 0 ]; then echo '#{text}'; else echo '#{otherwise}';fi\\`"
+        Shell::Segment.new "\\`if [ \\$? = 0 ]; then echo '#{text}'; else echo '#{otherwise}';fi\\`"
       end
     end
   end
