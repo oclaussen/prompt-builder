@@ -46,7 +46,7 @@ module PromptBuilder
         @prompts[default_variable] = self unless @prompts.key?(default_variable)
         lines = []
         @prompts.each do |name, p|
-          p.script "export #{name}=$'#{p.compile}"
+          p.script "export #{name}=$'#{p.compile}'"
           lines += p.lines
         end
         lines.join "\n"
